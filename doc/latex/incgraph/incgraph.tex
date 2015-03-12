@@ -1,6 +1,6 @@
 % \LaTeX-Main\
-%% The LaTeX package incgraph - version 1.11 (2013/01/16)
-%% incgraph.sty: Manual
+%% The LaTeX package incgraph - version 1.12 (2015/03/12)
+%% incgraph.tex: Manual
 %%
 %% -------------------------------------------------------------------------------------------
 %% Copyright (c) 2012-2013 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
@@ -31,7 +31,7 @@
 \urlstyle{sf}
 
 \usepackage[a4paper,left=2.5cm,right=2.5cm,top=1.5cm,bottom=1.5cm,
-    marginparsep=5mm,marginparwidth=10mm,
+    marginparsep=3mm,marginparwidth=18mm,
     headheight=0mm,headsep=0cm,
     footskip=1.5cm,includeheadfoot]{geometry}
 \usepackage{fancyhdr}
@@ -51,7 +51,23 @@
 \setlength{\bibitemsep}{\smallskipamount}
 \addbibresource{\jobname.bib}
 
-\usepackage[listings,theorems,documentation,skins]{tcolorbox}
+\usepackage[many,listings,documentation]{tcolorbox}
+
+\tcbset{skin=enhanced,
+  doc head={colback=yellow!10!white,interior style=fill},
+  doc head key={colback=magenta!5!white,interior style=fill},
+  color key=DarkViolet,
+  color value=Teal,
+  color color=Teal,
+  color counter=Orange!85!black,
+  color length=Orange!85!black,
+  index colorize,
+  index annotate,
+  %external/externalizer=tcolorbox.doc.externalizer,
+}
+\renewcommand*{\tcbdocnew}[1]{\textcolor{green!50!black}{\sffamily\bfseries N} #1}
+\renewcommand*{\tcbdocupdated}[1]{\textcolor{blue!75!black}{\sffamily\bfseries U} #1}
+
 \usepackage{incgraph}
 
 \hypersetup{
@@ -61,20 +77,40 @@
   pdfkeywords={graphics inclusion page}
 }
 
-\def\version{1.11}%
-\def\datum{2013/01/16}%
-\makeindex
-
-
 \usepackage{tikz,multicol}
+
+\lstdefinestyle{mydocumentation}{style=tcbdocumentation,
+  classoffset=0,
+  texcsstyle=\color{blue},
+  % LaTeX and other packages
+  moretexcs={arrayrulecolor,draw,path,fill,includegraphics,ifthenelse,isodd,lipsum,path,pgfkeysalso,foreach},
+  classoffset=1,
+  moretexcs={%
+    incgraph,incmultigraph,n,ni,nn,nt,igrset,igrpage,igrcenter,igrcenterfit,
+    igrtargetset,igrboxset,igrboxcenter,igrpagestyle,igrboxtikz,igrboxtikzpage,
+    igrboxtikzcenter,igrsetmatchvalue,igrsetmatches,igrifmatch,igrmakezerofill,
+    },
+  texcsstyle=\color{Definition}\bfseries,
+  classoffset=2,
+  keywordstyle=\color{Option}\bfseries,
+  % option list
+  morekeywords={%
+    },
+  classoffset=0% restore default
+  }
+
+\tcbset{documentation listing style=mydocumentation,%
+  docexample/.style={enhanced,colframe=Navy!50!ExampleFrame,colback=Navy!5!ExampleBack,fontlower=\footnotesize,
+    bicolor,colbacklower=ExampleBack!5!white,drop fuzzy shadow},
+}
 
 \tcbmakedocSubKey{docIgrKey}{igr}
 
 \newcounter{texexp}
 
 \tcbset{
-  example/.code 2 args={\refstepcounter{texexp}\label{#2}%
-  \pgfkeysalso{docexample,fonttitle=\bfseries,title={Example \thetexexp: #1}}},
+  example/.code 2 args={\refstepcounter{texexp}%
+  \pgfkeysalso{label={#2},docexample,listing style=mydocumentation,fonttitle=\bfseries,title={Example \thetexexp: #1}}},
 }
 
 \newenvironment{texexptitled}[3][]{%
@@ -82,15 +118,25 @@
   \tcbset{example={#2}{#3},listing file={\jobname.\thetexexp.listing},#1}%
   \tcblisting{}}{\endtcblisting}
 
+
 \newcommand{\inputlisting}[1]{\input{\jobname.#1.listing}}
 \newcommand{\inputlastlisting}{\inputlisting{\thetexexp}}
+
+\def\version{1.12}%
+\def\datum{2015/03/12}%
+\makeindex
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
 \begin{center}
-\vspace*{5mm}\par
-{\bfseries\LARGE The \texttt{incgraph} package\par}
-{\large Manual for version \version\ (\datum)\par}\bigskip
+\vspace*{5mm}
+\begin{tcolorbox}[enhanced,
+  center upper,width=10cm,boxrule=0.4pt,
+  colback=white,colframe=black!50!yellow,drop fuzzy midday shadow=black!50!yellow]
+{\bfseries\LARGE The \texttt{incgraph} package\par}\medskip
+{\large Manual for version \version\ (\datum)\par}
+\end{tcolorbox}\bigskip
 {\large Thomas F.~Sturm%
   \footnote{Prof.~Dr.~Dr.~Thomas F.~Sturm, Institut f\"{u}r Mathematik und Informatik,
     Universit\"{a}t der Bundeswehr M\"{u}nchen, D-85577 Neubiberg, Germany;
@@ -110,13 +156,13 @@
   Also, bookmarking is especially supported.
 \end{absquote}
 
-
+\enlargethispage*{1cm}
 \tableofcontents
 
 \begin{inctext}[paper=graphics]
   \begin{tcolorbox}[title={Caveat\hfill --- Page \thepage\ ---},
     colframe=red!65!black,colback=red!10!white,fonttitle=\Large\bfseries,
-    fontupper=\large,arc=0mm]
+    fontupper=\large,arc=0mm,outer arc=0mm]
     This documentation contains a lot of effects which can only be seen
     when viewed on a computer screen. If you read this text on paper, you
     will not notice the paper resizing and the bookmarks. Also, pages in landscape may probably
@@ -162,8 +208,8 @@ external multi-page PDF documents.
 \end{dispListing}
 
 The package |incgraph| loads the package
-|pgfkeys| \cite{tantau:2010c}. If no options are given, it also
-loads the packages |pgf|, |pgffor| \cite{tantau:2010c},
+|pgfkeys| \cite{tantau:2013a}. If no options are given, it also
+loads the packages |pgf|, |pgffor| \cite{tantau:2013a},
 the package |graphicx| \cite{carlisle:1999a}, and the
 package |bookmark| \cite{oberdiek:2011a}.
 
@@ -234,7 +280,7 @@ the package |graphicx| \cite{carlisle:1999a}.
   If \meta{graphics options} are given, these are added to the options for
   the underlying |\includegraphics| command. See the documentation of
   |graphicx| \cite{carlisle:1999a} for a list of applicable \meta{graphics options}.\\
-  The \meta{list} may contain any construction allowed for the |\foreach| statement \cite{tantau:2010c},
+  The \meta{list} may contain any construction allowed for the |\foreach| statement \cite{tantau:2013a},
   especially a list of numbers.
   The elements of the list can be used inside the \meta{file name pattern}
   with the following macros:
@@ -499,6 +545,42 @@ see page~\pageref{exarotated.listing}.
   |bookmark| \cite{oberdiek:2011a} for a list of applicable \meta{bookmark options}.
 \end{docIgrKey}
 
+\clearpage
+\subsection{Borders}
+
+The following settings enlarge or shrink the picture box, if
+\refKey{/igr/graphicspaper} is used. For other paper settings, the result
+will be just a certain shift of the picture box since the enlarged box
+will be centered on the paper.
+
+\begin{docIgrKey}[][doc new=2015-03-12]{left border}{=\meta{length}}{no default, initially |0pt|}
+Adds a space of \meta{length} at the left hand side.
+\end{docIgrKey}
+
+\begin{docIgrKey}[][doc new=2015-03-12]{bottom border}{=\meta{length}}{no default, initially |0pt|}
+Adds a space of \meta{length} at the bottom.
+\end{docIgrKey}
+
+\begin{docIgrKey}[][doc new=2015-03-12]{right border}{=\meta{length}}{no default, initially |0pt|}
+Adds a space of \meta{length} at the right hand side.
+\end{docIgrKey}
+
+\begin{docIgrKey}[][doc new=2015-03-12]{top border}{=\meta{length}}{no default, initially |0pt|}
+Adds a space of \meta{length} at the top.
+\end{docIgrKey}
+
+\begin{docIgrKey}[][doc new=2015-03-12]{horizontal border}{=\meta{length}}{no default, initially |0pt|}
+Adds a space of \meta{length} at the left hand side and the right hand side.
+\end{docIgrKey}
+
+\begin{docIgrKey}[][doc new=2015-03-12]{vertical border}{=\meta{length}}{no default, initially |0pt|}
+Adds a space of \meta{length} at the top and bottom.
+\end{docIgrKey}
+
+\begin{docIgrKey}[][doc new=2015-03-12]{border}{=\meta{length}}{no default, initially |0pt|}
+Adds a space of \meta{length} at all four sides.
+\end{docIgrKey}
+
 
 \clearpage
 \subsection{Map and Match}
@@ -569,7 +651,7 @@ see page~\pageref{exarotated.listing}.
 
 \begin{docIgrKey}{overlay}{=\marg{tikz code}}{no default, initially unset}
   Introduces arbitrary \meta{tikz code} to be drawn over the included image.
-  Note that the |tikz| package \cite{tantau:2010c} has to be loaded separately.
+  Note that the |tikz| package \cite{tantau:2013a} has to be loaded separately.
   To support positioning inside the picture, two |tikz| nodes named
   |box| and |page| are defined. |box| takes the dimensions of the included image
   and |page| takes the dimensions of the image or of the page depending on the usage of
@@ -646,7 +728,6 @@ see page~\pageref{exarotated.listing}.
 
 \section{Examples}
 
-
 \subsection{Including some Scans to Standard Paper}
 In this scenario, we have some scans (or images from whatever source) which
 should be combined to a PDF document for our paperless office.
@@ -712,19 +793,21 @@ shrunk or enlarged easily by adding a |scale| option for the underlying
 |\includegraphics| macro.
 
 
-
-
 \def\thecurrentexample{\jobname-example-c.tex}
 \tcbinputlisting{listing file=\thecurrentexample,listing only,
-example={\texttt{\thecurrentexample}}{reformatting}}
+ example={\texttt{\thecurrentexample}}{reformatting}}
 
 The compiled result of this stand-alone source code is not found in this document but as
 a separate file in the documentation directory of the package.
 
 
 
+
 \clearpage
 \subsection{Drawing on Full Paper Size}
+
+
+
 In the following examples, no external image is included to the document.
 Instead, the image (or whatever) is created inside the document and put
 on a separate page which could be resized or take the original document
@@ -733,7 +816,6 @@ paper size.
 In Example \ref{fullpaperdrawing1}, a |tikzpicture| is drawn. The whole
 picture is put inside an \refEnv{inctext} environment which puts the drawing
 on a separate page which gets the dimensions of the drawing.
-
 
 \begin{texexptitled}[listing only]{Creation of a special text page (resized)}{fullpaperdrawing1}
 \begin{inctext}[paper=graphics, bookmark=My special text page (resized)]
@@ -787,6 +869,8 @@ directly inside the |tikzpicture|.
 \end{tikzpicture}
 \end{inctext}
 \end{texexptitled}
+
+
 See the result on the following \hyperlink{mytarget}{page}.
 \clearpage\inputlastlisting
 
@@ -883,7 +967,7 @@ user interface described in Section \ref{sec:interface} and Section \ref{sec:key
 \clearpage
 \begin{docCommand}{igrboxtikz}{}
   The current content of the |\igrbox| is embedded into a |\node| command
-  from the |tikz| package \cite{tantau:2010c} which has to be loaded separately.
+  from the |tikz| package \cite{tantau:2013a} which has to be loaded separately.
   Also, the bounding box is adjusted to the |\igrbox|.\\
   To support positioning inside the picture, two |tikz| nodes named
   |box| and |page| are defined which both take the dimensions of the |\igrbox|.
@@ -918,7 +1002,7 @@ The boxing macros can also be used nested (see the result on the following page)
 
 \begin{docCommand}{igrboxtikzcenter}{}
   The current content of the |\igrbox| is embedded into a |\node| command
-  from the |tikz| package \cite{tantau:2010c} which has to be loaded separately.
+  from the |tikz| package \cite{tantau:2013a} which has to be loaded separately.
   This node is placed in the center of a bounding box which takes the current
   page dimensions. Afterwards, |\igrBoxWidth| and |\igrBoxHeight| are
   redefined to the dimensions of the total page.\\
@@ -1032,12 +1116,13 @@ See the result on the following page.
 % Actually, it is not a good idea to include the references like this!
 % Do not follow this bad example ...
 \begin{tcbverbatimwrite}{\jobname.bib}
-@manual{tantau:2010c,
+
+@manual{tantau:2013a,
    author    = {Till Tantau},
    title     = {The TikZ and PGF Packages},
-   subtitle  = {Manual for version 2.10},
-   url       = {http://mirror.ctan.org/graphics/pgf/base/doc/generic/pgf/pgfmanual.pdf},
-   date      = {2010-10-25},
+   subtitle  = {Manual for version 3.0.0},
+   url       = {http://sourceforge.net/projects/pgf/},
+   date      = {2013-12-20},
 }
 
 @manual{carlisle:1999a,

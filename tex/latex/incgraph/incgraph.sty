@@ -1,8 +1,8 @@
-%% The LaTeX package incgraph - version 1.11 (2013/01/16)
+%% The LaTeX package incgraph - version 1.12 (2015/03/12)
 %% incgraph.sty: Graphics inclusion page
 %%
 %% -------------------------------------------------------------------------------------------
-%% Copyright (c) 2012-2013 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
+%% Copyright (c) 2012-2015 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
 %% -------------------------------------------------------------------------------------------
 %%
 %% This work may be distributed and/or modified under the
@@ -18,7 +18,7 @@
 %% This work consists of all files listed in README
 %%
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{incgraph}[2013/01/16 version 1.11 LaTeX special graphics inclusion]
+\ProvidesPackage{incgraph}[2015/03/12 version 1.12 LaTeX special graphics inclusion]
 
 \DeclareOption{pgf}{\def\igrreq@pgf{\RequirePackage{pgf}[2008/01/15]\RequirePackage{pgffor}}}%
 \DeclareOption{nopgf}{\def\igrreq@pgf{}}%
@@ -70,9 +70,40 @@
   \igr@target@next%
 }
 
+\def\igr@do@rebox{%
+  \setbox\igrbox\hbox{%
+    \kern\igr@left@border%
+    \vbox{%
+      \kern\igr@top@border%
+      \box\igrbox%
+      \kern\igr@bottom@border%
+    }%
+    \kern\igr@right@border}%
+}
+
+\def\igr@rebox{%
+  \ifdim\igr@top@border=0pt\relax%
+    \ifdim\igr@bottom@border=0pt\relax%
+      \ifdim\igr@left@border=0pt\relax%
+        \ifdim\igr@right@border=0pt\relax%
+        \else%
+          \igr@do@rebox%
+        \fi%
+      \else%
+        \igr@do@rebox%
+      \fi%
+    \else%
+      \igr@do@rebox%
+    \fi%
+  \else%
+    \igr@do@rebox%
+  \fi%
+}
+
 \long\def\igrboxset#1{%
   \igr@nextAutoTarget%
-  \setbox\igrbox\hbox{#1}%
+  \setbox\igrbox\color@hbox#1\color@endbox%
+  \igr@rebox%
   \igr@length=\wd\igrbox%
   \edef\igrBoxWidth{\the\igr@length}%
   \igr@length=\ht\igrbox%
@@ -284,6 +315,7 @@
   \clearpage\begin{lrbox}{\igrbox}%
 }{%
   \unskip\ifx\igr@label@text\igr@empty\else\label{\igr@label@text}\fi\end{lrbox}%
+  \igr@rebox%
   \igr@length=\wd\igrbox%
   \edef\igrBoxWidth{\the\igr@length}%
   \igr@length=\ht\igrbox%
@@ -440,6 +472,13 @@
   paper/.style={#1paper},
   center/.style=currentpaper,
   page/.style=graphicspaper,
+  left border/.store in=\igr@left@border,
+  bottom border/.store in=\igr@bottom@border,
+  right border/.store in=\igr@right@border,
+  top border/.store in=\igr@top@border,
+  horizontal border/.style={left border=#1,right border=#1},
+  vertical border/.style={bottom border=#1,top border=#1},
+  border/.style={left border=#1,bottom border=#1,right border=#1,top border=#1},
 %
   graphicspaper,
   options=,
@@ -457,6 +496,7 @@
   overlay@code=,
   no overlay,
   portrait,
+  border=0pt,
 }
 
 
