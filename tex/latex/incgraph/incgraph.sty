@@ -1,8 +1,8 @@
-%% The LaTeX package incgraph - version 1.12 (2015/03/12)
+%% The LaTeX package incgraph - version 1.2.0 (2021/10/20)
 %% incgraph.sty: Graphics inclusion page
 %%
 %% -------------------------------------------------------------------------------------------
-%% Copyright (c) 2012-2015 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
+%% Copyright (c) 2012-2021 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
 %% -------------------------------------------------------------------------------------------
 %%
 %% This work may be distributed and/or modified under the
@@ -18,7 +18,7 @@
 %% This work consists of all files listed in README
 %%
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{incgraph}[2015/03/12 version 1.12 LaTeX special graphics inclusion]
+\ProvidesPackage{incgraph}[2021/10/20 version 1.2.0 LaTeX special graphics inclusion]
 
 \DeclareOption{pgf}{\def\igrreq@pgf{\RequirePackage{pgf}[2008/01/15]\RequirePackage{pgffor}}}%
 \DeclareOption{nopgf}{\def\igrreq@pgf{}}%
@@ -44,9 +44,82 @@
 \newdimen\igr@length
 \newcounter{igrtarget}
 
+\ExplSyntaxOn
+
+\sys_if_engine_pdftex:TF
+  {
+    \NewDocumentCommand \igrGetPageSize {}
+      {
+        \cs_gset_nopar:Npx \igrPageWidth  { \the\pdfpagewidth  }
+        \cs_gset_nopar:Npx \igrPageHeight { \the\pdfpageheight }
+      }
+    \NewDocumentCommand \igrSetPageSize { m m }
+      {
+        \pdfpagewidth  #1
+        \pdfpageheight #2
+      }
+    \NewDocumentCommand \igrGetLastPage { m }
+      {
+        \pdfximage{#1}
+        \cs_gset_nopar:Npx \igrLastPage { \the\pdflastximagepages }
+      }
+  }
+  {
+    \sys_if_engine_luatex:TF
+      {
+        \NewDocumentCommand \igrGetPageSize {}
+          {
+            \cs_gset_nopar:Npx \igrPageWidth  { \the\pagewidth  }
+            \cs_gset_nopar:Npx \igrPageHeight { \the\pageheight }
+          }
+        \NewDocumentCommand \igrSetPageSize { m m }
+          {
+            \pagewidth  #1
+            \pageheight #2
+          }
+        \NewDocumentCommand \igrGetLastPage { m }
+          {
+            \saveimageresource{#1}
+            \cs_gset_nopar:Npx \igrLastPage { \the\lastsavedimageresourcepages }
+          }
+      }
+      {
+        \cs_if_exist:NTF \pdfpagewidth
+          {
+            \NewDocumentCommand \igrGetPageSize {}
+              {
+                \cs_gset_nopar:Npx \igrPageWidth  { \the\pdfpagewidth  }
+                \cs_gset_nopar:Npx \igrPageHeight { \the\pdfpageheight }
+              }
+            \NewDocumentCommand \igrSetPageSize { m m }
+              {
+                \pdfpagewidth  #1
+                \pdfpageheight #2
+              }
+          }
+          {
+            \NewDocumentCommand \igrGetPageSize {}
+              {
+                \cs_gset_nopar:Npx \igrPageWidth  { \the\paperwidth  }
+                \cs_gset_nopar:Npx \igrPageHeight { \the\paperheight }
+              }
+            \NewDocumentCommand \igrSetPageSize { m m }
+              {
+              }
+          }
+        \NewDocumentCommand \igrGetLastPage { m }
+          {
+            \cs_gset_nopar:Npx \igrLastPage { 1 }
+          }
+      }
+  }
+
+\ExplSyntaxOff
+
 \AtBeginDocument{%
-  \edef\igrOrginalPageWidth{\the\pdfpagewidth}%
-  \edef\igrOrginalPageHeight{\the\pdfpageheight}%
+  \igrGetPageSize%
+  \let\igrOrginalPageWidth\igrPageWidth%
+  \let\igrOrginalPageHeight\igrPageHeight%
 }
 
 \def\igr@target@auto{%
@@ -60,7 +133,7 @@
 
 \let\igr@target@next=\igr@target@auto
 
-\def\igrtargetset#1{%
+\NewDocumentCommand\igrtargetset{m}{%
   \def\igr@usertarget{#1}%
   \let\igr@target@next=\igr@target@user%
 }
@@ -100,10 +173,7 @@
   \fi%
 }
 
-\long\def\igrboxset#1{%
-  \igr@nextAutoTarget%
-  \setbox\igrbox\color@hbox#1\color@endbox%
-  \igr@rebox%
+\def\igr@get@box@dimensions{%
   \igr@length=\wd\igrbox%
   \edef\igrBoxWidth{\the\igr@length}%
   \igr@length=\ht\igrbox%
@@ -114,11 +184,18 @@
   \edef\igrBoxHeight{\the\igr@length}%
 }
 
+\NewDocumentCommand\igrboxset{+m}{%
+  \igr@nextAutoTarget%
+  \setbox\igrbox\color@hbox#1\color@endbox%
+  \igr@rebox%
+  \igr@get@box@dimensions%
+}
+
 
 \def\igr@hyper{\hypertarget{\igrAutoTarget}{}}
-\def\igr@empty{}
 
-\def\igrboxcenter{%
+\NewDocumentCommand\igrboxcenter{}{%
+  \igrGetPageSize%
   \thispagestyle{\igrpagestyle}%
   %
   \igr@length=-1in%
@@ -128,7 +205,7 @@
   \advance\igr@length by -\headsep%
   \edef\igr@offy@top{\the\igr@length}%
   %
-  \igr@length=\pdfpageheight%
+  \igr@length=\igrPageHeight%
   \advance\igr@length by -\igrBoxHeight%
   \divide\igr@length by 2%
   \edef\igr@offy@abs{\the\igr@length}%
@@ -146,7 +223,7 @@
   \fi%
   \edef\igr@offx@left{\the\igr@length}%
   %
-  \igr@length=\pdfpagewidth%
+  \igr@length=\igrPageWidth%
   \advance\igr@length by -\igrBoxWidth%
   \divide\igr@length by 2%
   \advance\igr@length by \igr@offx@left%
@@ -160,7 +237,7 @@
   \break%
 }
 
-\def\igrboxtikz{%
+\NewDocumentCommand\igrboxtikz{}{%
   \path[use as bounding box] (0,0) rectangle (\igrBoxWidth,\igrBoxHeight);
   \node[line width=0mm,inner sep=0,rectangle,above right] (box) at (0,0) {\box\igrbox};
   \node[minimum width=\igrBoxWidth,minimum height=\igrBoxHeight,line width=0mm,inner sep=0mm,above right] (page) at (0,0) {};%
@@ -168,11 +245,12 @@
 
 \let\igrboxtikzpage=\igrboxtikz
 
-\def\igrboxtikzcenter{%
-  \path[use as bounding box] (0,0) rectangle (\pdfpagewidth,\pdfpageheight);
-  \node[line width=0mm,inner sep=0,rectangle,above right] (box) at ({(\pdfpagewidth-\igrBoxWidth)/2},{(\pdfpageheight-\igrBoxHeight)/2}) {\box\igrbox};
-  \edef\igrBoxWidth{\the\pdfpagewidth}%
-  \edef\igrBoxHeight{\the\pdfpageheight}%
+\NewDocumentCommand\igrboxtikzcenter{}{%
+  \igrGetPageSize%
+  \path[use as bounding box] (0,0) rectangle (\igrPageWidth,\igrPageHeight);
+  \node[line width=0mm,inner sep=0,rectangle,above right] (box) at ({(\igrPageWidth-\igrBoxWidth)/2},{(\igrPageHeight-\igrBoxHeight)/2}) {\box\igrbox};
+  \let\igrBoxWidth\igrPageWidth%
+  \let\igrBoxHeight\igrPageHeight%
   \node[minimum width=\igrBoxWidth,minimum height=\igrBoxHeight,line width=0mm,inner sep=0mm,above right] (page) at (0,0) {};%
 }
 
@@ -186,16 +264,15 @@
 % Output macros
 
 \def\igr@out@resize#1#2{%
-  \edef\igrCurrentPageWidth{\the\pdfpagewidth}%
-  \edef\igrCurrentPageHeight{\the\pdfpageheight}%
+  \igrGetPageSize%
+  \let\igrCurrentPageWidth\igrPageWidth%
+  \let\igrCurrentPageHeight\igrPageHeight%
   \eject%
-  \pdfpagewidth=#1%
-  \pdfpageheight=#2%
+  \igrSetPageSize{#1}{#2}%
   \igr@overlay%
   \edef\theigrpage{\thepage}%
   \igrboxcenter%
-  \pdfpagewidth=\igrCurrentPageWidth%
-  \pdfpageheight=\igrCurrentPageHeight%
+  \igrSetPageSize{\igrCurrentPageWidth}{\igrCurrentPageHeight}%
 }
 
 \def\igr@out@center@fit@port{%
@@ -222,7 +299,9 @@
 }
 
 \def\igr@out@center@land{%
-  \edef\igr@temp@w{\the\pdfpagewidth}\edef\igr@temp@h{\the\pdfpageheight}%
+  \igrGetPageSize%
+  \let\igr@temp@w\igrPageWidth%
+  \let\igr@temp@h\igrPageHeight%
   \igr@out@resize{\igr@temp@h}{\igr@temp@w}%
 }
 
@@ -232,17 +311,17 @@
 
 % Toolbox output
 
-\long\def\igrcenterfit#1#2#3{%
+\NewDocumentCommand\igrcenterfit{mm+m}{%
   \igrboxset{#3}%
   \igr@out@resize{#1}{#2}%
 }
 
-\long\def\igrpage#1{%
+\NewDocumentCommand\igrpage{+m}{%
   \igrboxset{#1}%
   \igr@out@page%
 }
 
-\long\def\igrcenter#1{%
+\NewDocumentCommand\igrcenter{+m}{%
   \igrboxset{#1}%
   \igr@out@center@port%
 }
@@ -250,85 +329,245 @@
 
 % include macros
 
-\def\incgraph{%
-  \@ifnextchar[{\inc@graph}{\inc@graph[]}}
-
-\def\inc@graph[#1]{%
-  \@ifnextchar[{\inc@@graph[#1]}{\inc@@graph[#1][]}}
-
-\long\def\inc@@graph[#1][#2]#3{%
-  \begingroup%
-  \def\nt{#3}%
-  \igr@if@file@exists{\nt}{%
-    \igrset{#1}%
-    \igr@match@hook%
-    \edef\igr@incgraph{\noexpand\igr@include@graphics[\igr@options,#2]}%
-    \igrboxset{\igr@incgraph{\nt}\ifx\igr@label@text\igr@empty\else\label{\igr@label@text}\fi}%
-    \igr@output%
-    \ifx\igr@bookmark@text\igr@empty\else%
-    \edef\igr@bookmark{\noexpand\bookmark[\igr@bookmark@options,dest=\noexpand\igrAutoTarget]}%
-    \igr@bookmark{\igr@bookmark@text}\fi%
-  }{}%
-  \endgroup%
-}
-
-\def\igr@bookmark@heading{%
-  \global\let\igr@process@label=\igr@empty%
-  \ifx\igr@bookmark@heading@text\igr@empty\else%
-  \edef\igr@bookmark{\noexpand\bookmark[\igr@bookmark@heading@options,dest=\noexpand\igrAutoTarget]}%
-  \igr@bookmark{\igr@bookmark@heading@text}\fi%
-  \global\let\igr@process@bookmark@heading=\igr@empty%
-}
-
-\def\incmultigraph{%
-  \@ifnextchar[{\inc@multigraph}{\inc@multigraph[]}}
-
-\def\inc@multigraph[#1]{%
-  \@ifnextchar[{\inc@@multigraph[#1]}{\inc@@multigraph[#1][]}}
-
-\long\def\inc@@multigraph[#1][#2]#3#4{%
-  \begingroup%
-  \igrset{#1}%
-  \ifx\igr@label@text\igr@empty\global\let\igr@process@label=\igr@empty\else%
-    \global\def\igr@process@label{\label{\igr@label@text}}\fi%
-  \global\let\igr@process@bookmark@heading=\igr@bookmark@heading%
-  \foreach \n [count=\ni] in {#4} {%
-    \edef\nn{\igr@zero@fill{\n}}%
-    \def\nt{#3}%
-    \igr@if@file@exists{\nt}{%
-      \igr@match@hook%
-      \edef\igr@incgraph{\noexpand\igr@include@graphics[\igr@options,#2]}%
-      \igrboxset{\igr@incgraph{\nt}\igr@process@label}%
-      \igr@output%
-      \igr@process@bookmark@heading%
-      \ifx\igr@bookmark@text\igr@empty\else%
-      \edef\igr@bookmark{\noexpand\bookmark[\igr@bookmark@options,dest=\noexpand\igrAutoTarget]}%
-      \igr@bookmark{\igr@bookmark@text}\fi%
-  }{}}\endgroup%
-}
+\ExplSyntaxOn
 
 
-\newenvironment{inctext}[1][]{%
-  \igrset{#1}%
-  \igr@match@hook%
-  \igr@nextAutoTarget%
-  \clearpage\begin{lrbox}{\igrbox}%
-}{%
-  \unskip\ifx\igr@label@text\igr@empty\else\label{\igr@label@text}\fi\end{lrbox}%
-  \igr@rebox%
-  \igr@length=\wd\igrbox%
-  \edef\igrBoxWidth{\the\igr@length}%
-  \igr@length=\ht\igrbox%
-  \edef\igrBoxht{\the\igr@length}%
-  \igr@length=\dp\igrbox%
-  \edef\igrBoxdp{\the\igr@length}%
-  \advance\igr@length by \igrBoxht%
-  \edef\igrBoxHeight{\the\igr@length}%
-  \igr@output%
-  \ifx\igr@bookmark@text\igr@empty\else%
-  \edef\igr@bookmark{\noexpand\bookmark[\igr@bookmark@options,dest=\noexpand\igrAutoTarget]}%
-  \igr@bookmark{\igr@bookmark@text}\fi%
-}
+\bool_new:N \g__incgra_first_include
+\bool_new:N \g__incgra_multi_include
+\clist_new:N \l__incgra_extensions_clist
+\tl_new:N \l__incgra_bookmark_heading_options_tl
+\tl_new:N \l__incgra_bookmark_heading_text_tl
+\tl_new:N \l__incgra_bookmark_options_tl
+\tl_new:N \l__incgra_bookmark_text_tl
+\tl_new:N \l__incgra_label_text_tl
+\tl_new:N \l__incgra_options_tl
+
+
+\cs_new_protected_nopar:Npn \__incgra_if_file_exist_extensions:nTF #1
+  {
+    \bool_set_false:N \l_tmpa_bool
+    \clist_map_inline:Nn \l__incgra_extensions_clist
+      {
+        \file_if_exist:nTF { #1 ##1 }
+          {
+            \tl_put_right:Nn \nt {##1}
+            \bool_set_true:N \l_tmpa_bool
+            \clist_map_break:
+          }
+      }
+    \bool_if:NTF \l_tmpa_bool
+  }
+
+
+\cs_new_protected_nopar:Npn \__incgra_if_file_exist_extensions_star:nTF #1#2#3
+  {
+    \file_if_exist:nTF { #1 }
+      {
+        #2
+      }
+      {
+        \__incgra_if_file_exist_extensions:nTF {#1}{#2}{#3}
+      }
+  }
+
+
+\cs_new_protected_nopar:Npn \__incgra_includegraphics:nn #1#2
+  {
+    \igr@match@hook
+
+    \tl_set:Nn       \l_tmpa_tl { \__incgra_include_graphics:w [ }
+    \tl_put_right:NV \l_tmpa_tl \l__incgra_options_tl
+    \tl_put_right:Nn \l_tmpa_tl { ,#1] }
+
+    \bool_if:NTF \g__incgra_multi_include
+      {
+        \bool_if:NTF \g__incgra_first_include
+          {
+            \tl_if_empty:NTF \l__incgra_label_text_tl
+              {
+                \igrboxset{\l_tmpa_tl{#2}}
+              }
+              {
+                \igrboxset{\l_tmpa_tl{#2}\label{\l__incgra_label_text_tl}}
+              }
+            \igr@output
+            \tl_if_empty:NF \l__incgra_bookmark_heading_text_tl
+              {
+                \tl_set:Nn       \l_tmpa_tl { \bookmark[ }
+                \tl_put_right:NV \l_tmpa_tl \l__incgra_bookmark_heading_options_tl
+                \tl_put_right:Nn \l_tmpa_tl { ,dest=\igrAutoTarget] }
+                \l_tmpa_tl { \l__incgra_bookmark_heading_text_tl }
+              }
+            \bool_gset_false:N \g__incgra_first_include
+          }
+          {
+            \igrboxset{\l_tmpa_tl{#2}}
+            \igr@output
+          }
+      }
+      {
+        \tl_if_empty:NTF \l__incgra_label_text_tl
+          {
+            \igrboxset{\l_tmpa_tl{#2}}
+          }
+          {
+            \igrboxset{\l_tmpa_tl{#2}
+            \label{\l__incgra_label_text_tl}}
+          }
+        \igr@output
+      }
+    \tl_if_empty:NF \l__incgra_bookmark_text_tl
+      {
+        \tl_set:Nn       \l_tmpa_tl { \bookmark[ }
+        \tl_put_right:NV \l_tmpa_tl \l__incgra_bookmark_options_tl
+        \tl_put_right:Nn \l_tmpa_tl { ,dest=\igrAutoTarget] }
+        \l_tmpa_tl{\l__incgra_bookmark_text_tl}
+      }
+  }
+
+\cs_generate_variant:Nn \__incgra_includegraphics:nn { nV }
+
+
+\NewDocumentCommand \incgraph { +O{} O{} m }
+  {
+    \group_begin:
+    \igrset{#1}
+    \bool_gset_false:N \g__incgra_multi_include
+    \tl_clear_new:N \nt
+    \tl_set:Nn \nt {#3}
+    \__incgra_if_file_exist:nTF{#3}
+      {
+        \__incgra_includegraphics:nV {#2} \nt
+      }
+      {}
+    \group_end:
+  }
+
+
+\NewDocumentCommand \incmultigraph { +O{} O{} m m }
+  {
+    \group_begin:
+    \igrset{#1}
+    \bool_gset_true:N \g__incgra_multi_include
+    \bool_gset_true:N \g__incgra_first_include
+    \tl_clear_new:N \nt
+    \tl_clear_new:N \nn
+    \foreach \n [count=\ni] in {#4}
+      {
+        \tl_set:Nn \nt {#3}
+        \tl_set:Nx \nn {\igr@zero@fill{\n}}
+        \__incgra_if_file_exist:nTF{#3}
+          {
+            \__incgra_includegraphics:nV {#2} \nt
+          }
+          {}
+      }
+    \group_end:
+  }
+
+
+\NewDocumentEnvironment{inctext}{ +O{} }
+  {
+    \igrset{#1}
+    \igr@match@hook
+    \igr@nextAutoTarget
+    \clearpage
+    \begin{lrbox}{\igrbox}
+  }
+  {
+    \unskip
+    \tl_if_empty:NF \l__incgra_label_text_tl
+      {
+        \label{\l__incgra_label_text_tl}
+      }
+    \end{lrbox}
+    \igr@rebox
+    \igr@get@box@dimensions
+    \igr@output
+    \tl_if_empty:NF \l__incgra_bookmark_text_tl
+      {
+        \tl_set:Nn       \l_tmpa_tl { \bookmark[ }
+        \tl_put_right:NV \l_tmpa_tl \l__incgra_bookmark_options_tl
+        \tl_put_right:Nn \l_tmpa_tl { ,dest=\igrAutoTarget] }
+        \l_tmpa_tl { \l__incgra_bookmark_text_tl }
+      }
+  }
+
+
+\igrset
+  {
+    include~command/.code =
+      {
+        \cs_set_eq:NN \__incgra_include_graphics:w #1
+      },
+    include~command/.default = \includegraphics,
+    extensions/.code =
+      {
+        \clist_set:Nn \l__incgra_extensions_clist {#1}
+      },
+    extensions~add/.code =
+      {
+        \clist_put_right:Nn \l__incgra_extensions_clist {#1}
+      },
+    extensions~from~graphics/.code=
+      {
+        \cs_if_exist:NT \Gin@extensions
+          {
+            \clist_set:NV \l__incgra_extensions_clist \Gin@extensions
+          }
+      },
+    existence~check/.code =
+      {
+        \cs_set_eq:NN \__incgra_if_file_exist:nTF #1
+      },
+    ignore~on~not~found/.style =
+      {
+        existence~check = \file_if_exist:nTF
+      },
+    ignore~on~not~found~with~extensions/.code =
+      {
+        \cs_set_eq:NN \__incgra_if_file_exist:nTF \__incgra_if_file_exist_extensions:nTF
+        \quark_if_nil:NF { #1 }
+          {
+            \clist_set:Nn \l__incgra_extensions_clist {#1}
+          }
+      },
+    ignore~on~not~found~with~extensions/.default = \q_nil,
+    ignore~on~not~found~with~extensions*/.code =
+      {
+        \cs_set_eq:NN \__incgra_if_file_exist:nTF \__incgra_if_file_exist_extensions_star:nTF
+        \quark_if_nil:NF { #1 }
+          {
+            \clist_set:Nn \l__incgra_extensions_clist {#1}
+          }
+      },
+    ignore~on~not~found~with~extensions*/.default = \q_nil,
+    no~existence~check/.style =
+      {
+        existence~check = \use_ii:nnn
+      },
+    fail~on~not~found/.style = no~existence~check,
+    options/.store~in = \l__incgra_options_tl,
+    options~add/.code =
+      {
+        \tl_if_empty:NTF \l__incgra_options_tl
+          {
+            \tl_set:Nn \l__incgra_options_tl { #1 }
+          }
+          {
+            \tl_put_right:Nn \l__incgra_options_tl { ,#1 }
+          }
+      },
+    bookmark/.store~in                 = \l__incgra_bookmark_text_tl,
+    bookmark~options/.store~in         = \l__incgra_bookmark_options_tl,
+    bookmark~heading/.store~in         = \l__incgra_bookmark_heading_text_tl,
+    bookmark~heading~options/.store~in = \l__incgra_bookmark_heading_options_tl,
+    label/.store~in                    = \l__incgra_label_text_tl,
+  }
+
+\ExplSyntaxOff
+
+
 
 
 \def\igr@make@zerofill#1#2#3#4#5#6#7#8#9{%
@@ -347,7 +586,7 @@
   }%
 }
 
-\def\igrmakezerofill#1#2{%
+\NewDocumentCommand\igrmakezerofill{mm}{%
   \def\igr@zerofill##1{##1}%
   \ifcase#2\or\or\igr@make@zerofill{0}{}{}{}{}{}{}{}{}%
   \or\igr@make@zerofill{00}{0}{}{}{}{}{}{}{}%
@@ -362,11 +601,11 @@
   \let#1=\igr@zerofill%
 }
 
-\newcommand{\igrsetmatchvalue}[2]{%
+\NewDocumentCommand\igrsetmatchvalue{mm}{%
   \pgfkeyssetvalue{/igrmatch/#1}{#2}%
 }
 
-\newcommand{\igrifmatch}[3]{%
+\NewExpandableDocumentCommand\igrifmatch{mmm}{%
   \pgfkeysifdefined{/igrmatch/#1}{%
     \pgfkeysgetvalue{/igrmatch/#1}{\igrmatchvalue}#2}{#3}%
 }
@@ -378,41 +617,26 @@
   }%
 }
 
-\newcommand{\igrsetmatches}[1]{\pgfkeys{/igrsetmatch/.cd,#1}}
-
-\newcommand{\igr@no@existence@check}[3]{#2}
+\NewDocumentCommand\igrsetmatches{m}{\pgfkeys{/igrsetmatch/.cd,#1}}
 
 
 \igrset{%
-  options/.store in=\igr@options,
-  options add/.code={%
-      \toks0=\expandafter{\igr@options}%
-      \def\temp{#1}\toks1=\expandafter{\temp}%
-      \edef\igr@options{\the\toks0,\the\toks1}},
-  bookmark/.store in=\igr@bookmark@text,
-  bookmark options/.store in=\igr@bookmark@options,
-  bookmark heading/.store in=\igr@bookmark@heading@text,
-  bookmark heading options/.store in=\igr@bookmark@heading@options,
-  label/.store in=\igr@label@text,
   zerofill/.code={\igrmakezerofill{\igr@zero@fill}{#1}},
   set matches/.code=\igrsetmatches{#1},
   hyper/.code={\let\igr@hypertarget=\igr@hyper},
-  no hyper/.code={\let\igr@hypertarget=\igr@empty},
+  no hyper/.code={\def\igr@hypertarget{}},
   if match code/.code args={#1#2#3}{\def\igr@match@hook{\igrifmatch{#1}{#2}{#3}}},
   if match set/.style args={#1#2#3}{if match code={#1}{\igrset{#2}}{\igrset{#3}}},
   if match set bookmark/.style args={#1#2#3}{if match code={#1}{\igrset{bookmark={#2}}}{\igrset{bookmark={#3}}}},
-  disable match/.code={\let\igr@match@hook=\igr@empty},
-  include command/.code={\let\igr@include@graphics=#1},
-  include command/.default=\includegraphics,
-  existence check/.code={\let\igr@if@file@exists=#1},
-  fail on not found/.style={existence check=\igr@no@existence@check},
-  ignore on not found/.style={existence check=\IfFileExists},
+  disable match/.code={\def\igr@match@hook{}},
   pagestyle/.store in=\igrpagestyle,
   target/.code={\igrtargetset{#1}},
   overlay@code/.store in=\igr@tikz@hook,
   overlay/.code={\let\igr@overlay=\igr@overlay@on\igrset{overlay@code={#1}}},
-  overlay page number at/.style={overlay={\node[fill opacity=0.35,draw opacity=0.5,text opacity=1,
-    inner xsep=1em,rounded corners,fill=white,draw=black] at (#1) {\thepage};}},
+  overlay page number options/.store in=\igr@overlay@pagenumber@options,
+  overlay page number at/.style={overlay={%
+    \expandafter\node\expandafter[\igr@overlay@pagenumber@options]
+      at (#1) {\thepage};}},
   overlay page number at top/.style={overlay page number at={\igrBoxWidth/2,\igrBoxHeight-#1}},
   overlay page number at top/.default=1.5cm,
   overlay page number at bottom/.style={overlay page number at={\igrBoxWidth/2,#1}},
@@ -492,11 +716,13 @@
   disable match,
   include command,
   ignore on not found,
+  extensions={.jpg,.png},
   pagestyle=empty,
   overlay@code=,
   no overlay,
   portrait,
   border=0pt,
+  overlay page number options={fill opacity=0.35,draw opacity=0.5,text opacity=1,
+    inner xsep=1em,rounded corners,fill=white,draw=black},
 }
-
 
