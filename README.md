@@ -1,7 +1,7 @@
-# The LaTeX package incgraph - version 1.2.0 (2021/10/20)
+# The LaTeX package incgraph - version 1.3.0 (2024/03/14)
 
 
-> Copyright (c) 2012-2021 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
+> Copyright (c) 2012-2024 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
 
 > This work may be distributed and/or modified under the
 > conditions of the LaTeX Project Public License, either version 1.3

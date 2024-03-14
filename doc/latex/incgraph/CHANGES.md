@@ -17,6 +17,31 @@ and this project adheres to
 
 
 
+## [1.3.0] - 2024-03-14
+
+### Added
+- Option `overlay page number options app` (issue #2)
+- Option `xshift`
+- Option `yshift`
+- Autosize Options:
+    - Option `autosize`
+    - Option `autosize width gap`
+    - Option `autosize height gap`
+    - Option `autosize gap`
+    - Option `autosize min scale`
+    - Option `autosize max scale`
+
+### Changed
+- Implementation overhauled and completely rewritten in LaTeX3.
+    Major changes of the whole code.
+    Option keys kept to be pgfkeys.
+- `\igrboxcenter` drops box now after usage
+
+### Fixed
+- Documentation typo (issue #4)
+
+
+
 ## [1.2.0] - 2021-10-20
 
 ### Added
@@ -40,7 +65,7 @@ and this project adheres to
   [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - From now on version numbers adhere to
   [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
-- Readme moved from README to README.md and adapted to  
+- Readme moved from README to README.md 
 - Documentation code revised
 - Internal package creation process modernized (invisible to the user)
 - Adaption of paper size made compatible with lualatex

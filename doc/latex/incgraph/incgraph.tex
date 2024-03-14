@@ -1,10 +1,10 @@
 % \LaTeX-Main\
 % !TeX encoding=UTF-8
-%% The LaTeX package incgraph - version 1.2.0 (2021/10/20)
+%% The LaTeX package incgraph - version 1.3.0 (2024/03/14)
 %% incgraph.tex: Manual
 %%
 %% -------------------------------------------------------------------------------------------
-%% Copyright (c) 2012-2021 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
+%% Copyright (c) 2012-2024 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
 %% -------------------------------------------------------------------------------------------
 %%
 %% This work may be distributed and/or modified under the
@@ -36,7 +36,7 @@
 \end{tcolorbox}\bigskip
 {\large Thomas F.~Sturm%
   \footnote{Prof.~Dr.~Dr.~Thomas F.~Sturm, Institut f\"{u}r Mathematik und Informatik,
-    Universit\"{a}t der Bundeswehr M\"{u}nchen, D-85577 Neubiberg, Germany;
+    University of the Bundeswehr Munich, D-85577 Neubiberg, Germany;
      email: \href{mailto:thomas.sturm@unibw.de}{thomas.sturm@unibw.de}}\par\medskip
 \normalsize\url{https://www.ctan.org/pkg/incgraph}\par
 \url{https://github.com/T-F-S/incgraph}
@@ -115,14 +115,58 @@ loads the packages |pgf|, |pgffor| \cite{tantau:tikz},
 the package |graphicx| \cite{carlisle:graphics}, and the
 package |bookmark| \cite{oberdiek:bookmark}.
 
-\begin{itemize}
-\item The option |nopgf| prevents the loading of |pgf| and |pgffor|.\\
+The following package options are available:
+
+%-------------------------------------------------------------------------------
+\begin{docPackageOptions}
+  {
+    {
+      doc name = pgf,
+      doc description = {no value, initially set},
+    },
+    {
+      doc name = nopgf,
+      doc description = {no value, initially unset},
+    },
+  }
+  The option |nopgf| prevents the loading of |pgf| and |pgffor|.\\
   The opposite option |pgf| resets to loading the packages.
-\item The option |nographicx| prevents the loading of |graphicx|.\\
+\end{docPackageOptions}
+%-------------------------------------------------------------------------------
+
+%-------------------------------------------------------------------------------
+\begin{docPackageOptions}
+  {
+    {
+      doc name = graphicx,
+      doc description = {no value, initially set},
+    },
+    {
+      doc name = nographicx,
+      doc description = {no value, initially unset},
+    },
+  }
+  The option |nographicx| prevents the loading of |graphicx|.\\
   The opposite option |graphicx| resets to loading the package.
-\item The option |nobookmark| prevents the loading of |bookmark|.\\
+\end{docPackageOptions}
+%-------------------------------------------------------------------------------
+
+%-------------------------------------------------------------------------------
+\begin{docPackageOptions}
+  {
+    {
+      doc name = bookmark,
+      doc description = {no value, initially set},
+    },
+    {
+      doc name = nobookmark,
+      doc description = {no value, initially unset},
+    },
+  }
+  The option |nobookmark| prevents the loading of |bookmark|.\\
   The opposite option |bookmark| resets to loading the package.
-\end{itemize}
+\end{docPackageOptions}
+%-------------------------------------------------------------------------------
 
 So, the minimal package loading is done with the following:
 \begin{dispListing}
@@ -220,7 +264,7 @@ the package |graphicx| \cite{carlisle:graphics}.
 \begin{texexptitled}%
   {Some text on a shrunk paper; see page~\pageref{inctext1}}{inctext1.listing}
 \begin{inctext}[paper=graphics,label={inctext1},bookmark={A huge ABC}]
-  \Huge ABC
+  \fontsize{20mm}{20mm}\selectfont\bfseries ABC
 \end{inctext}
 \end{texexptitled}
 
@@ -313,18 +357,18 @@ the package |graphicx| \cite{carlisle:graphics}.
 \end{docIgrKey}
 
 
-\makeatletter%
+\ExplSyntaxOn
 \foreach \x in {a0,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,
   b0,b1,b2,b3,b4,b5,b6,b7,b8,b9,b10,
   c0,c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,
   d0,d1,d2,d3,d4,d5,d6,d7,
   executive,letter,legal,ledger}
-{\begin{docIgrKey}{\x paper}{}{no value}
+{\begin{docIgrKey}{\x paper}{}{no~value}
   \igrset{\x paper}%
-  The paper size is set to
-  \texttt{\igr@target@width} $\times$ \texttt{\igr@target@height}.
+  The~paper~size~is~set~to~
+  \texttt{\l__incgra_target_width_tl}~$\times$~\texttt{\l__incgra_target_heigth_tl}.
 \end{docIgrKey}}
-\makeatother%
+\ExplSyntaxOff
 
 \begin{docIgrKey}{center}{}{no value, deprecated}
   An alias for \refKey{/igr/currentpaper}.
@@ -387,7 +431,7 @@ the package |graphicx| \cite{carlisle:graphics}.
     },
   }
   Omits any existence checks by the package, i.e. the underlying
-  \docAuxCommand*{includegraphics} is called directly any may
+  \docAuxCommand*{includegraphics} is called directly and may
   stop the compilation with an error if the included file does not exist.
   Both options are equal, but the newer \refKey{/igr/no existence check}
   is considered to be more comprehensible.
@@ -532,41 +576,128 @@ see page~\pageref{exarotated.listing}.
   |bookmark| \cite{oberdiek:bookmark} for a list of applicable \meta{bookmark options}.
 \end{docIgrKey}
 
+
+
 \clearpage
-\subsection{Borders}
+\subsection{Autosize}
+
+\begin{docIgrKeys}
+  {
+    {
+      doc name = autosize,
+      doc parameter = \colOpt{=true\textbar false},
+      doc description = {default |true|, initially |false|},
+      doc new = {2024-03-09}
+    }
+  }
+If set to |true|, the picture box is resized to fit into the paper while
+keeping the aspect ratio. This
+setting has no effect for \refKey{/igr/graphicspaper}.
+Note that this autosize is applied after possible size and scaling options
+for |\includegraphics| are conducted, see \refCom{incgraph} and \refCom{incmultigraph}.
+
+\begin{texexptitled}%
+  {Autosized pictures; see from page~\pageref{autosize.1}}{autosize.listing}
+\incmultigraph[zerofill=4, currentpaper, autosize,
+  bookmark heading={Autosized pictures},
+  bookmark heading options={level=subsection},
+  bookmark={\nt},bookmark options={level=subsubsection},
+  overlay page number at bottom,
+  label={autosize.\n}]{exaimage-\nn.png}{1,...,150}
+\end{texexptitled}
+
+The following tuning
+options influence how the resizing is done.
+\end{docIgrKeys}
+
+
+\begin{docIgrKeys}
+  [
+    doc parameter = {=\meta{length}},
+    doc description = {no default, initially |0mm|},
+    doc new = {2024-03-09}
+  ]
+  {
+    { doc name = autosize width gap },
+    { doc name = autosize height gap },
+    { doc name = autosize gap }
+  }
+\meta{length} is subtracted from the width or height of the current paper size
+to compute the target size for the automatic picture box scaling.
+\refKey{/igr/autosize gap} sets both values at the same time.
+For example, |autosize gap=20mm| gives (at least) |10mm| space around
+the rescaled picture box.\par
+Negative \meta{length} values allow the picture box to extrude over the borders of
+the current paper.
+\end{docIgrKeys}
+
+
+\begin{docIgrKeys}
+  [
+    doc parameter = {=\meta{floating-point expression}},
+    doc new = {2024-03-09}
+  ]
+  {
+    { doc name = autosize min scale, doc description = {no default, initially |0.001|} },
+    { doc name = autosize max scale, doc description = {no default, initially |1000|} }
+  }
+The scale number of the automatic scaling will
+always be between \refKey{/igr/autosize min scale} and \refKey{/igr/autosize max scale}
+even if other settings are violated.\par
+|autosize min scale=1| means that the picture box is never to be shrunk.\par
+|autosize max scale=1| means that the picture box is never to be enlarged.\par
+\end{docIgrKeys}
+
+
+
+\clearpage
+\subsection{Borders and Shifts}
 
 The following settings enlarge or shrink the picture box, if
 \refKey{/igr/graphicspaper} is used. For other paper settings, the result
-will be just a certain shift of the picture box since the enlarged box
+will be a certain shift of the picture box since the enlarged box
 will be centered on the paper.
 
-\begin{docIgrKey}[][doc new=2015-03-12]{left border}{=\meta{length}}{no default, initially |0pt|}
+\begin{docIgrKey}[][doc new and updated={2015-03-12}{2024-03-08}]{left border}{=\meta{length}}{no default, initially |0pt|}
 Adds a space of \meta{length} at the left hand side.
 \end{docIgrKey}
 
-\begin{docIgrKey}[][doc new=2015-03-12]{bottom border}{=\meta{length}}{no default, initially |0pt|}
+\begin{docIgrKey}[][doc new and updated={2015-03-12}{2024-03-08}]{bottom border}{=\meta{length}}{no default, initially |0pt|}
 Adds a space of \meta{length} at the bottom.
 \end{docIgrKey}
 
-\begin{docIgrKey}[][doc new=2015-03-12]{right border}{=\meta{length}}{no default, initially |0pt|}
+\begin{docIgrKey}[][doc new and updated={2015-03-12}{2024-03-08}]{right border}{=\meta{length}}{no default, initially |0pt|}
 Adds a space of \meta{length} at the right hand side.
 \end{docIgrKey}
 
-\begin{docIgrKey}[][doc new=2015-03-12]{top border}{=\meta{length}}{no default, initially |0pt|}
+\begin{docIgrKey}[][doc new and updated={2015-03-12}{2024-03-08}]{top border}{=\meta{length}}{no default, initially |0pt|}
 Adds a space of \meta{length} at the top.
 \end{docIgrKey}
 
-\begin{docIgrKey}[][doc new=2015-03-12]{horizontal border}{=\meta{length}}{no default, initially |0pt|}
+\begin{docIgrKey}[][doc new and updated={2015-03-12}{2024-03-08}]{horizontal border}{=\meta{length}}{no default, initially |0pt|}
 Adds a space of \meta{length} at the left hand side and the right hand side.
 \end{docIgrKey}
 
-\begin{docIgrKey}[][doc new=2015-03-12]{vertical border}{=\meta{length}}{no default, initially |0pt|}
+\begin{docIgrKey}[][doc new and updated={2015-03-12}{2024-03-08}]{vertical border}{=\meta{length}}{no default, initially |0pt|}
 Adds a space of \meta{length} at the top and bottom.
 \end{docIgrKey}
 
-\begin{docIgrKey}[][doc new=2015-03-12]{border}{=\meta{length}}{no default, initially |0pt|}
+\begin{docIgrKey}[][doc new and updated={2015-03-12}{2024-03-08}]{border}{=\meta{length}}{no default, initially |0pt|}
 Adds a space of \meta{length} at all four sides.
 \end{docIgrKey}
+
+\begin{docIgrKey}[][doc new={2024-03-08}]{xshift}{=\meta{length}}{no default, initially |0pt|}
+Shifts the picture box in horizontal direction without changing the paper size.
+This adapts the current values of \refKey{/igr/left border} and \refKey{/igr/right border}.
+Therefore, use this option \emph{after} the border values are set.
+\end{docIgrKey}
+
+\begin{docIgrKey}[][doc new={2024-03-08}]{yshift}{=\meta{length}}{no default, initially |0pt|}
+Shifts the picture box in vertical direction without changing the paper size.
+This adapts the current values of \refKey{/igr/top border} and \refKey{/igr/bottom border}.
+Therefore, use this option \emph{after} the border values are set.
+\end{docIgrKey}
+
 
 
 \clearpage
@@ -690,6 +821,11 @@ Adds a space of \meta{length} at all four sides.
 \end{docIgrKey}
 
 
+\begin{docIgrKey}[][doc new=2021-10-21]{overlay page number options app}{=\marg{tikz options}}{no default, initially unset}
+  Appends the given \meta{tikz options} to \refKey{/igr/overlay page number options}.
+\end{docIgrKey}
+
+
 \begin{docIgrKey}{no overlay}{}{no value, initially set}
   Removes the overlay setting.
 \end{docIgrKey}
@@ -716,9 +852,9 @@ Adds a space of \meta{length} at all four sides.
 
 \clearpage
 \hypertarget{optkeyexamples}{}%
-\bookmark[level=section,dest=optkeyexamples]{User Interface Examples}
+\bookmark[level=section,dest=optkeyexamples]{User Interface and Option Examples}
 \igrset{bookmark options={level=subsubsection}}
-\foreach \n in {1,...,11} {\inputlisting{\n}}
+\foreach \n in {1,...,12} {\inputlisting{\n}}
 
 \clearpage
 %--------------------------------------
@@ -793,7 +929,7 @@ Then, all four pages of the original document are imported to the new paper
 size. Note that the actual document content itself is not resized because
 letter and DIN A4 are not so very different. If needed, the content could be
 shrunk or enlarged easily by adding a |scale| option for the underlying
-|\includegraphics| macro.
+|\includegraphics| macro or by using \refKey{/igr/autosize}.
 
 
 \inputexamplelisting{\jobname-example-c.tex}{reformatting}
@@ -1179,9 +1315,9 @@ See the result on the following page.
 @manual{tantau:tikz,
    author    = {Till Tantau},
    title     = {The TikZ and PGF Packages},
-   subtitle  = {Manual for version 3.1.9a},
+   subtitle  = {Manual for version 3.1.10},
    url       = {https://mirrors.ctan.org/graphics/pgf/base/doc/pgfmanual.pdf},
-   date      = {2021-05-15},
+   date      = {2023-01-15},
 }
 
 @manual{carlisle:graphics,
@@ -1195,14 +1331,14 @@ See the result on the following page.
    author    = {Andreas Matthias},
    title     = {The pdfpages Package},
    url       = {https://mirrors.ctan.org/macros/latex/contrib/pdfpages/pdfpages.pdf},
-   date      = {2021-03-06},
+   date      = {2024-01-21},
 }
 
 @manual{oberdiek:bookmark,
   author    = {Heiko Oberdiek},
   title     = {The bookmark Package},
   url       = {https://mirrors.ctan.org/macros/latex/contrib/bookmark/bookmark.pdf},
-  date      = {2020-11-06},
+  date      = {2023-12-10},
 }
 
 \end{tcbverbatimwrite}
