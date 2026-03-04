@@ -2,9 +2,10 @@
 All notable changes to this project will be documented in this file.
 
 The format is based on
-[Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+
 
 ## [Unreleased]
 
@@ -14,6 +15,31 @@ and this project adheres to
 ### Removed
 ### Fixed
 ### Security
+
+
+
+## [1.4.0] - 2026-03-04
+
+### Added
+- `incgraph.doc.bib` for references (moved from documentation source)
+- `\incmultipages`: specialized macro to include multiple pages from a PDF file
+
+### Changed
+- .tds.zip removed from CTAN upload to comply to CTAN rules
+- TDS structure flattend on GitHub repository
+- `README.md` adapted to these changes
+- `CHANGES.md` renamed to `CHANGELOG.md` following https://keepachangelog.com/en/1.1.0/
+- `incgraph-doc.sty` renamed to `incgraph.doc.sty`
+- References updated
+- Required LaTeX version bumped to 2025-06-01
+- Implemenation of `\igrGetLastPage` changed. It wraps a L3 layer function now.
+- `\igrLastPage` is locally assigned now.
+
+### Fixed
+- Documentation produced with `minted2` instead of `minted` (currently not compatible to Python>=3.14)
+- `\eject` and `\break` replaced by `\clearpage` to get compatibility
+    with `twocolumn` documents (part of issue #5)
+- Several minor documentation corrections    
 
 
 
@@ -45,7 +71,6 @@ and this project adheres to
 ## [1.2.0] - 2021-10-20
 
 ### Added
-- Option `overlay page number options` (issue #2)
 - `\igrGetPageSize`
 - `\igrPageWidth`
 - `\igrPageHeight`

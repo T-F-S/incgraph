@@ -1,10 +1,10 @@
 % \LaTeX-Main\
 % !TeX encoding=UTF-8
-%% The LaTeX package incgraph - version 1.3.0 (2024/03/14)
-%% incgraph.tex: Manual
+%% The LaTeX package incgraph - version 1.4.0 (2026/03/04)
+%% incgraph.tex: package documentation
 %%
 %% -------------------------------------------------------------------------------------------
-%% Copyright (c) 2012-2024 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
+%% Copyright (c) 2012-2026 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
 %% -------------------------------------------------------------------------------------------
 %%
 %% This work may be distributed and/or modified under the
@@ -12,16 +12,16 @@
 %% of this license or (at your option) any later version.
 %% The latest version of this license is in
 %%   http://www.latex-project.org/lppl.txt
-%% and version 1.3 or later is part of all distributions of LaTeX
-%% version 2005/12/01 or later.
+%% and version 1.3c or later is part of all distributions of LaTeX
+%% version 2008 or later.
 %%
 %% This work has the LPPL maintenance status `author-maintained'.
 %%
-%% This work consists of all files listed in README
+%% This work consists of all files listed in README.md
 %%
 \documentclass[a4paper,11pt]{ltxdoc}
 
-\usepackage{incgraph-doc}
+\usepackage{incgraph.doc}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -85,9 +85,9 @@ An important use case for the package |incgraph| is to transform one or many sca
 or taken pictures to a PDF document. Optionally, the included graphics can
 be commented with bookmarks for the resulting PDF document.
 
-The well-known |graphicx| package \cite{carlisle:graphics} allows the inclusion
+The well-known |graphicx| package \cite{package:graphicx} allows the inclusion
 of several types of external graphics files. The convenience user interface
-of |incgraph| described in Section \ref{sec:interface} relies on this package and adds
+of |incgraph| described in Section~\ref{sec:interface} relies on this package and adds
 assistance for the described purpose. Note that the package is designed for and
 tested with |pdflatex| to produce PDF directly. Also, the package is
 intended to harmonize with |lualatex|.
@@ -96,10 +96,10 @@ resizing may not be applicable for other work-flows.
 
 Many of the features of the convenience user interface can be used directly
 with various basic macros. These are collected and described
-as a 'basic tool box' in Section \ref{sec:basictoolbox}.
+as a \enquote{basic tool box} in Section~\ref{sec:basictoolbox}.
 
 If this package does not aid your intended purpose, you may take a look
-at the |pdfpages| package \cite{matthias:pdfpages} which also supports the insertion of
+at the |pdfpages| package \cite{package:pdfpages} which also supports the insertion of
 external multi-page PDF documents.
 
 
@@ -110,10 +110,10 @@ external multi-page PDF documents.
 \end{dispListing}
 
 The package |incgraph| loads the package
-|pgfkeys| \cite{tantau:tikz}. If no options are given, it also
-loads the packages |pgf|, |pgffor| \cite{tantau:tikz},
-the package |graphicx| \cite{carlisle:graphics}, and the
-package |bookmark| \cite{oberdiek:bookmark}.
+|pgfkeys| \cite{package:tikz}. If no options are given, it also
+loads the packages |pgf|, |pgffor| \cite{package:tikz},
+the package |graphicx| \cite{package:graphicx}, and the
+package |bookmark| \cite{package:bookmark}.
 
 The following package options are available:
 
@@ -183,7 +183,7 @@ intended to avoid possible option clashes the easy way.
 
 \subsection{Inclusion Macros for External Graphics}
 The macros of this section rely on the |\includegraphics| command from
-the package |graphicx| \cite{carlisle:graphics}.
+the package |graphicx|~\cite{package:graphicx}.
 %Section \ref{sec:basictoolbox} describes more basic commands.
 
 \begin{docCommand}{incgraph}{\oarg{options}\oarg{graphics options}\marg{file name}}
@@ -193,7 +193,7 @@ the package |graphicx| \cite{carlisle:graphics}.
   The applicable \meta{options} are listed in Section \ref{sec:keys}.
   If \meta{graphics options} are given, these are added to the options for
   the underlying |\includegraphics| command. See the documentation of
-  |graphicx| \cite{carlisle:graphics} for a list of applicable \meta{graphics options}.
+  |graphicx| \cite{package:graphicx} for a list of applicable \meta{graphics options}.
 
 
 \begin{texexptitled}%
@@ -220,13 +220,13 @@ the package |graphicx| \cite{carlisle:graphics}.
 \begin{docCommand}{incmultigraph}{\oarg{options}\oarg{graphics options}\marg{file name pattern}\marg{list}}
   All picture files matching the given \meta{file name pattern} where some
   parts are substituted by elements of the \meta{list}
-  are included in the center of a separate page. Depending on the \meta{options}, the pages keep the
+  are included in the center of separate pages. Depending on the \meta{options}, the pages keep the
   document size or are resized to the graphics dimensions.
   The applicable \meta{options} are listed in Section \ref{sec:keys}.
   If \meta{graphics options} are given, these are added to the options for
   the underlying |\includegraphics| command. See the documentation of
-  |graphicx| \cite{carlisle:graphics} for a list of applicable \meta{graphics options}.\\
-  The \meta{list} may contain any construction allowed for the |\foreach| statement \cite{tantau:tikz},
+  |graphicx| \cite{package:graphicx} for a list of applicable \meta{graphics options}.\\
+  The \meta{list} may contain any construction allowed for the |\foreach| statement \cite{package:tikz},
   especially a list of numbers.
   The elements of the list can be used inside the \meta{file name pattern}
   with the following macros:
@@ -252,6 +252,78 @@ the package |graphicx| \cite{carlisle:graphics}.
 \end{texexptitled}
 \end{docCommand}
 
+\pagebreak
+
+\begin{docCommand}[doc new=2026-02-25]{incmultipages}{\oarg{options}\oarg{graphics options}\marg{file name}\marg{page list}}
+  This is mainly a specialized version of \refCom{incmultigraph} for inclusion
+  of one or several pages from a singular PDF file with given \meta{file name}.
+  All pages corresonding to the given \meta{page list}
+  are included in the center of separate pages.
+  \begin{itemize}
+  \item
+    Depending on the \meta{options}, the pages keep the
+    document size or are resized to the graphics dimensions.
+    The applicable \meta{options} are listed in Section \ref{sec:keys}.\
+  \item
+    If \meta{graphics options} are given, these are added to the options for
+    the underlying |\includegraphics| command. See the documentation of
+    |graphicx| \cite{package:graphicx} for a list of applicable \meta{graphics options}.
+    Note that the graphics option |page=\n| is set automatically.
+  \item The \meta{page list} may contain any construction allowed for the |\foreach| statement \cite{package:tikz},
+    basically a list of numbers. The page count of the PDF file is available as
+    \docAuxCommand{last} or alternatively \docAuxCommand{igrLastPage}. For example:\\
+    \begin{tabular}{@{}ll@{}}
+    \verb#{1,...,\last}# & All pages.\\ 
+    \verb#{\last,...,1}# & All pages in reverse order.\\ 
+    \verb#{2,4,...,\last}# & All even pages.\\ 
+    \verb#{2,...,\inteval{\last-1}}# & All pages without the first and the last page.\\ 
+    \verb#{\inteval{\last-4},...,\last}# & Last 5 pages.\\
+    \verb#{1,...,5,17,40,41,...,\last}# & Pages 1,2,3,4,5,17,40,41,42,43 until last page.
+    \end{tabular}
+  \end{itemize}
+  The elements of the list can be used for bookmarking
+  with the following macros:
+  \begin{itemize}
+  \item\docAuxCommand{n}: The current page of the list.
+  \item\docAuxCommand{ni}: The position of the current page inside the list, i.\,e.\ |\ni|
+    counts from 1 to the size of the list.
+  \item\docAuxCommand{nn}: The zero-filled |\n|. The digit
+    number of |\nn| is determined by \refKey{/igr/zerofill}.
+  \end{itemize}
+  The \meta{file name} is stored inside the macro:
+  \begin{itemize}
+  \item\docAuxCommand{nt}: This file name may be used for bookmarking.
+  \end{itemize}
+  In the default behavior, non existing files are ignored. Also, non
+  existing pages are ignored.
+\begin{dispListing}
+\incmultipages[
+  paper    = a4,
+  bookmark = {Imported page \n\ of \nt}
+]
+{incgraph-example-a.pdf}
+{1,...,\last}
+\end{dispListing}
+This example is continued in Section~\ref{sec:reformatting}.\par
+The same output can be generated with \refCom{incmultigraph}. Here, the page
+count has to be computed separately and the behavior in case of missing files
+or pages is different:
+\begin{dispListing}
+\igrGetLastPage{incgraph-example-a.pdf}
+\incmultigraph[
+  paper    = a4,
+  bookmark = {Imported page \n\ of \nt}
+]
+[page=\n]
+{incgraph-example-a.pdf}
+{1,...,\igrLastPage}
+\end{dispListing}
+
+
+\end{docCommand}
+
+
+\clearpage
 \subsection{Inclusion Macro for Internal Graphics}
 
 \begin{docEnvironment}{inctext}{\oarg{options}}
@@ -307,6 +379,8 @@ the package |graphicx| \cite{carlisle:graphics}.
 \clearpage
 %--------------------------------------
 \section{Option Keys}\label{sec:keys}
+The package |incgraph| uses the key-value interface of
+the |pgfkeys| \cite{package:tikz}.
 
 \subsection{Paper (Media) Size}\label{sec:papersize}
 
@@ -385,7 +459,7 @@ the package |graphicx| \cite{carlisle:graphics}.
 \begin{docIgrKey}{options}{=\marg{graphics options}}{no default, initially empty}
   The \meta{graphics options} are applied to the underlying \docAuxCommand*{includegraphics} command.
   See the documentation of
-  |graphicx| \cite{carlisle:graphics} for a list of applicable \meta{graphics options}.
+  |graphicx| \cite{package:graphicx} for a list of applicable \meta{graphics options}.
 \begin{texexptitled}%
   {A resized image; see page~\pageref{exagraphresize}}{exagraphresize.listing}
 \igrset{options={width=10cm,height=10cm}, paper=graphics,
@@ -499,7 +573,7 @@ the package |graphicx| \cite{carlisle:graphics}.
 
 \begin{docIgrKey}[][doc new=2021-10-16]{extensions from graphics}{}{initially unset}
   Takes the list of extensions from \docAuxCommand*{DeclareGraphicsExtensions}
-  of the |graphics| \cite{carlisle:graphics} package as setup for \refKey{/igr/extensions}.
+  of the |graphics| \cite{package:graphicx} package as setup for \refKey{/igr/extensions}.
   While this looks like the most comfortable options, this can significantely
   increase compilation time when used for fragmentary file lists, because
   every non-existing file from the file list will induce a lot of existence checks.
@@ -546,7 +620,7 @@ see page~\pageref{exarotated.listing}.
 \begin{docIgrKey}{bookmark options}{=\marg{bookmark options}}{no default, initially empty}
   Sets the options for a bookmark.
   See the documentation of
-  |bookmark| \cite{oberdiek:bookmark} for a list of applicable \meta{bookmark options}.
+  |bookmark| \cite{package:bookmark} for a list of applicable \meta{bookmark options}.
 \begin{texexptitled}%
   {Bookmark options; see page~\pageref{exabookmark}}{exabookmark.listing}
 % not every PDF reader will show the effect!
@@ -557,7 +631,7 @@ see page~\pageref{exarotated.listing}.
 \end{docIgrKey}
 
 \begin{docIgrKey}{bookmark heading}{=\meta{text}}{no default, initially empty}
-  For \refCom{incmultigraph}, an additional bookmark with the given \meta{text}
+  For \refCom{incmultigraph} and \refCom{incmultipages}, an additional bookmark with the given \meta{text}
   is set as a heading before the images are included.
 \begin{texexptitled}%
   {A series of pictures; see from page~\pageref{exaheading.1}}{exaheading.listing}
@@ -573,7 +647,7 @@ see page~\pageref{exarotated.listing}.
 \begin{docIgrKey}{bookmark heading options}{=\marg{bookmark options}}{no default, initially empty}
   Sets the options for a \refKey{/igr/bookmark heading}.
   See the documentation of
-  |bookmark| \cite{oberdiek:bookmark} for a list of applicable \meta{bookmark options}.
+  |bookmark| \cite{package:bookmark} for a list of applicable \meta{bookmark options}.
 \end{docIgrKey}
 
 
@@ -769,7 +843,7 @@ Therefore, use this option \emph{after} the border values are set.
 
 \begin{docIgrKey}{overlay}{=\marg{tikz code}}{no default, initially unset}
   Introduces arbitrary \meta{tikz code} to be drawn over the included image.
-  Note that the \tikzname\ package \cite{tantau:tikz} has to be loaded separately.
+  Note that the \tikzname\ package \cite{package:tikz} has to be loaded separately.
   To support positioning inside the picture, two |tikz| nodes named
   |box| and |page| are defined. |box| takes the dimensions of the included image
   and |page| takes the dimensions of the image or of the page depending on the usage of
@@ -917,7 +991,7 @@ a separate file in the documentation directory of the package.
 
 
 \clearpage
-\subsection{Reformatting from Letter to DIN A4 (and vice versa)}
+\subsection{Reformatting from Letter to DIN A4 (and vice versa)}\label{sec:reformatting}
 In this scenario, we assume to have a PDF document with the 'wrong' paper size.
 Here, |incgraph-example-a.pdf| has the letter format, but A4 paper
 is needed. |incgraph| is used to reformat to the desired paper size.
@@ -1061,21 +1135,24 @@ from |pdflatex| and |lualatex|.
 
 \subsection{Last Page Commands (Number of Pages)}
 
-The following macros are auxiliary tools which wrap corresponding functions
-from |pdflatex| and |lualatex|.
+The following macros are auxiliary tools which used to wrap corresponding functions
+from |pdflatex| and |lualatex|. Now, they rely on the L3 programming layer.
 
-\begin{docCommand}[doc new=2021-10-18]{igrGetLastPage}{\marg{file}}
-  Reads the last page (page count) from the given (PDF-)\meta{file}
-  and stores it into the macro \refCom{igrLastPage}.
+\begin{docCommand}[doc new and updated={2021-10-18}{2026-02-25}]{igrGetLastPage}{\marg{file}}
+  Reads the page count from the specified (PDF-)\meta{file} and stores it in
+  the macro \refCom{igrLastPage}.\par
+  Since 2026, this command has been implemented as a wrapper around
+  \docAuxCommand*{graphics_get_pagecount:nN} from the L3 programming layer.
 \end{docCommand}
 
 
-\begin{docCommand}[doc new=2021-10-18]{igrLastPage}{}
-  After using \refCom{igrGetLastPage}, \refCom{igrLastPage} contains
-  the last page of the currently tested file.
-  This is |\pdflastximagepages| for |pdflatex|,
-  |\lastsavedimageresourcepages| for |lualatex| and simply $1$
-  for other engines.
+\begin{docCommand}[doc new and updated={2021-10-18}{2026-02-25}]{igrLastPage}{}
+  After calling \refCom{igrGetLastPage}, the macro \refCom{igrLastPage} contains
+  the page count of the currently processed file.\par
+  Note that since 2026 the value of \refCom{igrLastPage} is assigned locally;
+  previously, it was assigned globally.\par
+  Also note that the page count is available alternatively inside
+  \refCom{incmultipages} as \docAuxCommand{last}.
 \end{docCommand}
 
 
@@ -1162,7 +1239,7 @@ from |pdflatex| and |lualatex|.
 \clearpage
 \begin{docCommand}{igrboxtikz}{}
   The current content of the |\igrbox| is embedded into a |\node| command
-  from the |tikz| package \cite{tantau:tikz} which has to be loaded separately.
+  from the |tikz| package \cite{package:tikz} which has to be loaded separately.
   Also, the bounding box is adjusted to the |\igrbox|.\\
   To support positioning inside the picture, two |tikz| nodes named
   |box| and |page| are defined which both take the dimensions of the |\igrbox|.
@@ -1197,7 +1274,7 @@ The boxing macros can also be used nested (see the result on the following page)
 
 \begin{docCommand}{igrboxtikzcenter}{}
   The current content of the |\igrbox| is embedded into a |\node| command
-  from the |tikz| package \cite{tantau:tikz} which has to be loaded separately.
+  from the |tikz| package \cite{package:tikz} which has to be loaded separately.
   This node is placed in the center of a bounding box which takes the current
   page dimensions. Afterwards, |\igrBoxWidth| and |\igrBoxHeight| are
   redefined to the dimensions of the total page.\\
@@ -1301,49 +1378,6 @@ See the result on the following page.
 
 \clearpage
 %--------------------------------------
-
-
-
-
-
-
-
-% Actually, it is not a good idea to include the references like this!
-% Do not follow this bad example ...
-\begin{tcbverbatimwrite}{\jobname.bib}
-
-@manual{tantau:tikz,
-   author    = {Till Tantau},
-   title     = {The TikZ and PGF Packages},
-   subtitle  = {Manual for version 3.1.10},
-   url       = {https://mirrors.ctan.org/graphics/pgf/base/doc/pgfmanual.pdf},
-   date      = {2023-01-15},
-}
-
-@manual{carlisle:graphics,
-   author    = {D. P. Carlisle},
-   title     = {Packages in the ‘graphics’ bundle},
-   url       = {https://mirrors.ctan.org/macros/latex/required/graphics/grfguide.pdf},
-   date      = {2021-03-05},
-   }
-
-@manual{matthias:pdfpages,
-   author    = {Andreas Matthias},
-   title     = {The pdfpages Package},
-   url       = {https://mirrors.ctan.org/macros/latex/contrib/pdfpages/pdfpages.pdf},
-   date      = {2024-01-21},
-}
-
-@manual{oberdiek:bookmark,
-  author    = {Heiko Oberdiek},
-  title     = {The bookmark Package},
-  url       = {https://mirrors.ctan.org/macros/latex/contrib/bookmark/bookmark.pdf},
-  date      = {2023-12-10},
-}
-
-\end{tcbverbatimwrite}
-
-\clearpage
 \printbibliography[heading=bibintoc]
 
 \printindex

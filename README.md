@@ -1,15 +1,16 @@
-# The LaTeX package incgraph - version 1.3.0 (2024/03/14)
+# The LaTeX package incgraph - version 1.4.0 (2026/03/04)
 
+[![CTAN](https://img.shields.io/ctan/v/incgraph.svg)](https://www.ctan.org/pkg/incgraph)
 
-> Copyright (c) 2012-2024 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
+> Copyright (c) 2012-2026 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
 
 > This work may be distributed and/or modified under the
 > conditions of the LaTeX Project Public License, either version 1.3
 > of this license or (at your option) any later version.
 > The latest version of this license is in
 >   http://www.latex-project.org/lppl.txt
-> and version 1.3 or later is part of all distributions of LaTeX
-> version 2005/12/01 or later.
+> and version 1.3c or later is part of all distributions of LaTeX
+> version 2008 or later.
 
 > This work has the LPPL maintenance status `author-maintained`.
 
@@ -30,9 +31,10 @@ well-known `includegraphics`. Also, bookmarking is especially supported.
 -  `README.md`                 this file
 -  `CHANGES.md`                log of changes (history)
 -  `incgraph.sty`              LaTeX package file (style file)
--  `incgraph.pdf`              documentation for csvsimple
+-  `incgraph.pdf`              documentation for incgraph
 -  `incgraph.tex`              source code of the documentation
--  `incgraph-doc.sty`          style file of the documentation
+-  `incgraph.doc.bib`          source code of the documentation
+-  `incgraph.doc.sty`          source code of the documentation
 -  `incgraph-example-a.tex`    example file A for package usage
 -  `incgraph-example-a.pdf`    compiled example A
 -  `incgraph-example-b.tex`    example file B for package usage
@@ -47,9 +49,7 @@ well-known `includegraphics`. Also, bookmarking is especially supported.
 
 ## Installation
 
-Copy the contents of the `incgraph.tds.zip` from CTAN to your local TeX file tree.
-
-Alternatively, put the files to their respective locations within the TeX installation:
+Install the files in the appropriate locations within your local TeX file tree.
 
 -  `incgraph.sty`         ->  /tex/latex/incgraph
 -  all other files        ->  /doc/latex/incgraph
