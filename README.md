@@ -1,4 +1,4 @@
-# The LaTeX package incgraph - version 1.4.0 (2026/03/04)
+# The LaTeX package incgraph - version 1.4.1 (2026/06/09)
 
 [![CTAN](https://img.shields.io/ctan/v/incgraph.svg)](https://www.ctan.org/pkg/incgraph)
 

@@ -17,6 +17,27 @@ and this project adheres to
 ### Security
 
 
+## [1.4.1] - 2026-06-09
+
+### Changed
+- `x` type expansions replaced by `e` or other code
+- Some code improvements
+- Documentation produced with `minted` instead of `minted2` (after Python fix)
+- Required LaTeX version bumped to 2026-06-01
+- Kerning code adapted to the new `\dim_horizontal:n` and `\dim_vertical:n`
+    of the L3 programming layer
+- Documentation of `documentpaper` amended
+- References updated
+
+### Removed
+- Keys `page` and `center`, which are deprecated since v1.10 (2012-09-28),
+  removed from documentation (still active in code)
+
+### Fixed
+- `documentpaper` was broken
+- Code style improved with help of explcheck (1 false positive error and 587 warnings removed)
+
+
 
 ## [1.4.0] - 2026-03-04
 
@@ -32,7 +53,7 @@ and this project adheres to
 - `incgraph-doc.sty` renamed to `incgraph.doc.sty`
 - References updated
 - Required LaTeX version bumped to 2025-06-01
-- Implemenation of `\igrGetLastPage` changed. It wraps a L3 layer function now.
+- Implementation of `\igrGetLastPage` changed. It wraps a L3 layer function now.
 - `\igrLastPage` is locally assigned now.
 
 ### Fixed
@@ -71,6 +92,7 @@ and this project adheres to
 ## [1.2.0] - 2021-10-20
 
 ### Added
+- Option `overlay page number options` (issue #2)
 - `\igrGetPageSize`
 - `\igrPageWidth`
 - `\igrPageHeight`

@@ -1,6 +1,6 @@
 % \LaTeX-Main\
 % !TeX encoding=UTF-8
-%% The LaTeX package incgraph - version 1.4.0 (2026/03/04)
+%% The LaTeX package incgraph - version 1.4.1 (2026/06/09)
 %% incgraph.tex: package documentation
 %%
 %% -------------------------------------------------------------------------------------------
@@ -395,6 +395,8 @@ the |pgfkeys| \cite{package:tikz}.
 
 \begin{docIgrKey}{documentpaper}{}{no value}
   The paper size is set to the initial document paper size.
+  If this option is applied inside the preamble, stored paper dimension may be
+  incorrect (so, do not use inside the preamble).
 \end{docIgrKey}
 
 \begin{docIgrKey}{graphicspaper}{}{no value, initially set}
@@ -443,14 +445,6 @@ the |pgfkeys| \cite{package:tikz}.
   \texttt{\l__incgra_target_width_tl}~$\times$~\texttt{\l__incgra_target_heigth_tl}.
 \end{docIgrKey}}
 \ExplSyntaxOff
-
-\begin{docIgrKey}{center}{}{no value, deprecated}
-  An alias for \refKey{/igr/currentpaper}.
-\end{docIgrKey}
-
-\begin{docIgrKey}{page}{}{no value, deprecated}
-  An alias for \refKey{/igr/graphicspaper}.
-\end{docIgrKey}
 
 
 \clearpage
@@ -519,8 +513,8 @@ the |pgfkeys| \cite{package:tikz}.
 \clearpage
 
 \begin{docIgrKeys}[
-    doc parameter   = \colOpt{=\marg{extension list}},
-    doc description = {initially unset},
+    doc parameter eq marg* = extension list,
+    doc description        = initially unset,
     doc new  = 2021-10-16,
   ]
   {
@@ -659,8 +653,7 @@ see page~\pageref{exarotated.listing}.
   {
     {
       doc name = autosize,
-      doc parameter = \colOpt{=true\textbar false},
-      doc description = {default |true|, initially |false|},
+      doc key choices* = {default=true,init=false},
       doc new = {2024-03-09}
     }
   }
@@ -687,8 +680,8 @@ options influence how the resizing is done.
 
 \begin{docIgrKeys}
   [
-    doc parameter = {=\meta{length}},
-    doc description = {no default, initially |0mm|},
+    doc parameter eq meta = length,
+    doc description init  = 0mm,
     doc new = {2024-03-09}
   ]
   {
@@ -708,12 +701,12 @@ the current paper.
 
 \begin{docIgrKeys}
   [
-    doc parameter = {=\meta{floating-point expression}},
+    doc parameter eq meta = floating-point expression,
     doc new = {2024-03-09}
   ]
   {
-    { doc name = autosize min scale, doc description = {no default, initially |0.001|} },
-    { doc name = autosize max scale, doc description = {no default, initially |1000|} }
+    { doc name = autosize min scale, doc description init = 0.001 },
+    { doc name = autosize max scale, doc description init = 1000 }
   }
 The scale number of the automatic scaling will
 always be between \refKey{/igr/autosize min scale} and \refKey{/igr/autosize max scale}
