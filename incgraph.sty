@@ -1,4 +1,4 @@
-%% The LaTeX package incgraph - version 1.4.1 (2026/06/09)
+%% The LaTeX package incgraph - version 1.4.2 (2026/06/25)
 %% incgraph.sty: tools for including graphics on full paper size
 %%
 %% -------------------------------------------------------------------------------------------
@@ -18,7 +18,7 @@
 %% This work consists of all files listed in README.md
 %%
 \NeedsTeXFormat{LaTeX2e}[2026-06-01]
-\ProvidesExplPackage{incgraph}{2026/06/09}{1.4.1}
+\ProvidesExplPackage{incgraph}{2026/06/25}{1.4.2}
   {LaTeX special graphics inclusion}
 
 % \debug_on:n {all}
@@ -361,9 +361,11 @@
       {
         \hbox_set:Nn \igrbox
           {
-            \begin { tikzpicture }
+            \begin { tikzpicture }  % [artifact]   Alternative for lualatex, but not for pdflatex
               \igrboxtikzcenter
+              \tag_suspend:n { igr-overlay } % Replacable by [artifact] (see above) for lualatex
               \l__incgra_overlay_code_tl
+              \tag_resume:n { igr-overlay }  % Replacable by [artifact] (see above) for lualatex
             \end { tikzpicture }
           }
         \__incgra_get_box_dimensions:
@@ -481,12 +483,14 @@
       {
         \bool_if:NTF \g__incgra_first_include_bool
           {
+            \UseTaggingSocket{ para/begin }
             \__incgra_box_set:n
               {
                 \exp_args:No \__incgra_include_graphics_base:nn { \l__incgra_options_tl, #1 } { #2 }
                 \tl_if_empty:NF \l__incgra_label_text_tl { \label { \l__incgra_label_text_tl } }
               }
             \__incgra_outout:
+            \UseTaggingSocket{ para/end }
             \tl_if_empty:NF \l__incgra_bookmark_heading_text_tl
               {
                 \exp_args:No \__incgra_bookmark_base:nn
@@ -496,20 +500,24 @@
             \bool_gset_false:N \g__incgra_first_include_bool
           }
           {
+            \UseTaggingSocket{ para/begin }
             \__incgra_box_set:n
               {
                 \exp_args:No \__incgra_include_graphics_base:nn { \l__incgra_options_tl, #1 } { #2 }
               }
             \__incgra_outout:
+            \UseTaggingSocket{ para/end }
           }
       }
       {
+        \UseTaggingSocket{ para/begin }
         \__incgra_box_set:n
         {
           \exp_args:No \__incgra_include_graphics_base:nn { \l__incgra_options_tl, #1 } { #2 }
           \tl_if_empty:NF \l__incgra_label_text_tl { \label { \l__incgra_label_text_tl } }
         }
         \__incgra_outout:
+        \UseTaggingSocket{ para/end }
       }
     \tl_if_empty:NF \l__incgra_bookmark_text_tl
       {
@@ -621,6 +629,7 @@
     \__incgra_match_hook:
     \__incgra_set_next_target:
     \clearpage
+    \UseTaggingSocket{ para/begin }
     \begin { lrbox } { \igrbox }
   }
   {
@@ -632,6 +641,7 @@
     \end { lrbox }
     \__incgra_get_box_dimensions:
     \__incgra_outout:
+    \UseTaggingSocket{ para/end }
     \tl_if_empty:NF \l__incgra_bookmark_text_tl
       {
         \exp_args:No \__incgra_bookmark_base:nn

@@ -17,6 +17,16 @@ and this project adheres to
 ### Security
 
 
+
+## [1.4.2] - 2026-06-25
+
+### Changed
+- `inctext` made compatible with tagging (issue https://github.com/latex3/tagging-project/issues/1429)
+- `\incgraph`, `\incmultigraph`, `\incmultipages` made compatible with tagging
+- Overlay content (mainly page numbering) made to be ignored by tagging (issue #6)
+
+
+
 ## [1.4.1] - 2026-06-09
 
 ### Changed
